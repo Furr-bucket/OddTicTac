@@ -54,7 +54,7 @@ const combinations = [
   [19, 14, 9, 4],
   [30, 25, 20, 15],
   [25, 20, 15, 10],
-  [20, 25, 10, 5],
+  [20, 15, 10, 5],
   [31, 26, 21, 16],
   [26, 21, 16, 11],
   [32, 27, 22, 17],
@@ -87,10 +87,15 @@ const combinations = [
 ];
 const board = document.getElementById("board");
 const cells = board.getElementsByTagName("td");
+const allCells = Array.from(board.getElementsByTagName("td"));
 const restartButton = document.querySelector(".restart");
 const cell = document.querySelectorAll(".cell");
 const popup = document.querySelector(".popup");
 const bucket = document.querySelector(".bucketOne");
+const scoreO = document.querySelector(".scoreC");
+let currentSO = 0;
+let currentSX = 0;
+const scoreX = document.querySelector(".scoreP");
 Array.from(cells).forEach((cell) => {
   cell.addEventListener("click", handleClick);
 });
@@ -119,7 +124,8 @@ restartButton.addEventListener("click", function () {
   for (let i = 0; i < cells.length; i++) {
     cells[i].textContent = "";
     currentPlayer = "X";
-    sign.textContent = `Player ${currentPlayer}'s Turn`;
+    sign.textContent = "Playing against the Odd Machine";
+    board.style.backgroundColor = "#698269";
   }
 });
 
@@ -175,7 +181,12 @@ function makeComputerMove() {
       makeMove(cells[c]);
       checkForWin();
       return;
-    } else if (
+    }
+  }
+  //blocking
+  for (let v = 0; v < combinations.length; v++) {
+    const [a, b, c, d] = combinations[v];
+    if (
       cells[a].textContent === "X" &&
       cells[b].textContent === "X" &&
       cells[c].textContent === "X" &&
@@ -211,7 +222,12 @@ function makeComputerMove() {
       makeMove(cells[a]);
       checkForWin();
       return;
-    } else if (
+    }
+  }
+
+  for (let v = 0; v < combinations.length; v++) {
+    const [a, b, c, d] = combinations[v];
+    if (
       cells[a].textContent === "O" &&
       cells[b].textContent === "O" &&
       cells[c].textContent === ""
@@ -220,11 +236,35 @@ function makeComputerMove() {
       checkForWin();
       return;
     } else if (
+      cells[a].textContent === "" &&
+      cells[b].textContent === "O" &&
+      cells[c].textContent === "O"
+    ) {
+      makeMove(cells[a]);
+      checkForWin;
+      return;
+    } else if (
+      cells[a].textContent === "O" &&
+      cells[b].textContent === "" &&
+      cells[c].textContent === "O"
+    ) {
+      makeMove(cells[b]);
+      checkForWin;
+      return;
+    } else if (
       cells[b].textContent === "X" &&
       cells[c].textContent === "X" &&
       cells[d].textContent === ""
     ) {
       makeMove(cells[d]);
+      checkForWin();
+      return;
+    } else if (
+      cells[c].textContent === "X" &&
+      cells[d].textContent === "X" &&
+      cells[a].textContent === ""
+    ) {
+      makeMove(cells[a]);
       checkForWin();
       return;
     } else if (cells[a].textContent === "O" && cells[b].textContent === "") {
@@ -239,13 +279,14 @@ function makeComputerMove() {
       makeMove(cells[a]);
       checkForWin();
       return;
+    } else {
+      // choose a random empty cell
+      let randomIndex = Math.floor(Math.random() * emptyCells.length);
+      let randomCell = emptyCells[randomIndex];
+      makeMove(randomCell);
+      return;
     }
   }
-
-  // choose a random empty cell
-  let randomIndex = Math.floor(Math.random() * emptyCells.length);
-  let randomCell = emptyCells[randomIndex];
-  makeMove(randomCell);
 }
 
 function checkForWin() {
@@ -259,6 +300,12 @@ function checkForWin() {
     ) {
       console.log(`Player ${currentPlayer} wins!`);
       sign.textContent = `Player ${currentPlayer} wins!`;
+      board.style.backgroundColor = "#20262E";
+      allCells.forEach((cell) => {
+        cell.textContent = "X";
+      });
+      currentSX = currentSX + 1;
+      scoreX.textContent = `Player Score: ${currentSX}`;
       return true;
     } else if (
       cells[a].textContent === "O" &&
@@ -268,6 +315,12 @@ function checkForWin() {
     ) {
       console.log("computer wins");
       sign.textContent = "Computer wins you useless rat!";
+      board.style.backgroundColor = "#20262E";
+      allCells.forEach((cell) => {
+        cell.textContent = "O";
+      });
+      currentSO = currentSO + 1;
+      scoreO.textContent = `Computer Score: ${currentSO}`;
       return;
     }
   }
@@ -342,3 +395,4 @@ function checkForDraw() {
 //     }
 //   }.bind({ currentPlayer: currentPlayer })
 // );
+
