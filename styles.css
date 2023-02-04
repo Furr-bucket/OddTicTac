@@ -53,3 +53,9 @@ button {
 button:hover {
   background-color: #aa5656;
 }
+.scores {
+  display: inline-block;
+  font-family: monaco;
+  color: #698269;
+  font-weight: bolder;
+}
